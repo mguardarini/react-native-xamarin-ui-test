@@ -1,28 +1,25 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   Text,
   View,
   FlatList,
-  TextInput,
-  Image,
-  ScrollView
-} from 'react-native';
-import tdc_logo from '../../../assets/tdc-logo.png';
-import  talk  from './talk-service/TalksService'
-import {TalksProps} from './talk-service/TalksProps'
-import { ItemSeparatorView } from "./item-separator/ItemSeparatorView";
+  Image } from 'react-native';
+import  talk  from './service/TalkAPI/TalkAPI'
+import {TalksProps} from './service/TalkAPI/TalksProps'
+import { ItemSeparatorView } from "./item-separator";
+import { SearchBar } from "./search-bar";
 import styles from './Home.styles';
   
 const Home = ({navigation}:any) => {
 
-  const [search, setSearch] = useState('');
+  const [value, setSearch] = useState('');
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [masterDataSource, setMasterDataSource] = useState([]);
 
   useEffect(() => {
     navigation.setOptions({
-      title: 'Bem vindo.',
+      title: 'Palestras',
       headerStyle: {
         backgroundColor: '#0798D5',
       },
@@ -31,24 +28,22 @@ const Home = ({navigation}:any) => {
         fontWeight: 'bold'
       },
    });
-    talk.getAllTalks().then((response: TalksProps) => {
-      setFilteredDataSource(response);
-      setMasterDataSource(response);
-    });
+   talk.getAllTalks().then((response: TalksProps) => {
+     setFilteredDataSource(response);
+     setMasterDataSource(response);
+   });
   
   }, []);
 
-  const searchFilterFunction = (text: string) => {
+  const searchFilter = (text: string) => {
     if (text) {
-      const newData = masterDataSource.filter(
-        function (item:TalksProps) {
-          const itemData = item.title
-            ? item.title.toUpperCase()
-            : ''.toUpperCase();
-          const textData = text.toUpperCase();
-          return itemData.indexOf(textData) > -1;
-      });
-      setFilteredDataSource(newData);
+      const searchText = masterDataSource.filter(
+        (item:TalksProps) => { 
+         return item.title
+                  .toUpperCase()
+                  .indexOf(text.toUpperCase()) > -1;}
+      );
+      setFilteredDataSource(searchText);
       setSearch(text);
     } else {
       setFilteredDataSource(masterDataSource);
@@ -56,18 +51,17 @@ const Home = ({navigation}:any) => {
     }
   };
 
-  const ItemView = ({item}) => {
-    const description =  item.id + '.' + item.description
+  const Talks = ({item:talk})  => {
     return (
-      <View key={item.id} style={styles.talkCards}>
-        <View style={{marginLeft:10}}>
-          <Image style={styles.tinyLogo}
-            source={{ uri: item.image }}/>
+      <View key={talk.id} style={styles.talks}>
+        <View style={styles.talkImageContainer}>
+          <Image style={styles.talkImage}
+            source={{ uri: talk.image }}/>
         </View>
-        <View style={{marginRight:120}}>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.itemStyle} onPress={() => goToSpeakerProfile()}>
-              {description}
+        <View style={styles.talkInformationsContainer}>
+          <Text style={styles.talkTitle}>{talk.title}</Text>
+          <Text style={styles.talkItem} onPress={() => navigation.navigate("speaker-profile")}>
+              {`${talk.id}.${talk.description}`}
           </Text>
         </View>
       </View>
@@ -75,34 +69,21 @@ const Home = ({navigation}:any) => {
     );
   };
 
-  const goToSpeakerProfile = () => navigation.navigate("speaker-profile");
-
   return (
-    <SafeAreaView style={styles.container}>
-        <View style={styles.containerImage}> 
-          <Image
-                style={styles.logo_image}
-                source={tdc_logo}
-          />
-        </View>
-        <View style={styles.containerTextInput}>
-          <TextInput
-            style={styles.textInputStyle}
-            onChangeText={(text: any) => searchFilterFunction(text)}
-            value={search}
-            underlineColorAndroid="transparent"
-            placeholder="Buscar"
-          />
+    <SafeAreaView style={styles.safeArea}>
+        <View style={styles.searchBar}>
+          <SearchBar onChangeText={(text: any) => searchFilter(text)} value={value}></SearchBar>
         </View>
         <FlatList 
               data={filteredDataSource}
-              renderItem={ItemView}
+              renderItem={Talks}
               onEndReachedThreshold={0.1}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(talk, index) => index.toString()}
               ItemSeparatorComponent={ItemSeparatorView}
               />
  
     </SafeAreaView>
   );
 };
+
 export default Home;
