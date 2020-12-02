@@ -13,19 +13,11 @@ steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
-  displayName: 'Install Node.js'
+  displayName: 'Instalando Node.js'
 
 - script: |
     npm install
-    npm run build
-  displayName: 'npm install and build'
-- task: CmdLine@2
-  inputs:
-    script: 'npm install -g yarn'
-
-- task: CmdLine@2
-  inputs:
-    script: 'yarn install'
+  displayName: 'Instalando dependencias React Native'
 - task: Gradle@2
   inputs:
     gradleWrapperFile: 'gradlew'
@@ -35,6 +27,7 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     javaHomeOption: 'JDKVersion'
     sonarQubeRunAnalysis: false
+  displayName: Buildando o Gradlew
 - task: Gradle@2
   inputs:
     gradleWrapperFile: 'gradlew'
@@ -44,3 +37,4 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     javaHomeOption: 'JDKVersion'
     sonarQubeRunAnalysis: false
+  displayName: Gerando APK 
