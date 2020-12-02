@@ -20,7 +20,7 @@ steps:
   displayName: 'Instalando dependencias React Native'
 - task: Gradle@2
   inputs:
-    gradleWrapperFile: 'gradlew'
+    gradleWrapperFile: 'android/gradlew'
     workingDirectory: 'android'
     tasks: 'build'
     publishJUnitResults: true
@@ -30,7 +30,7 @@ steps:
   displayName: Buildando o Gradlew
 - task: Gradle@2
   inputs:
-    gradleWrapperFile: 'gradlew'
+    gradleWrapperFile: 'android/gradlew'
     workingDirectory: 'android'
     tasks: 'assembleRelease'
     publishJUnitResults: true
