@@ -18,6 +18,17 @@ steps:
 - script: |
     npm install
   displayName: 'Instalando dependencias React Native'
+
+- task: Gradle@2
+  inputs:
+    gradleWrapperFile: 'android/gradlew'
+    workingDirectory: 'android'
+    tasks: 'clean'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    sonarQubeRunAnalysis: false
+
 - task: Gradle@2
   inputs:
     gradleWrapperFile: 'android/gradlew'
